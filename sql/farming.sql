@@ -139,6 +139,8 @@ CREATE TABLE infrastructure (
     uuid TEXT UNIQUE NOT NULL
 );
 
+CREATE INDEX infrastructure__name_idx ON infrastructure(name);
+
 /*Infrastructure table */
 
 INSERT INTO infrastructure (
@@ -169,6 +171,8 @@ CREATE TABLE infrastructure_type(
     infrastructure_uuid TEXT NOT NULL REFERENCES infrastructure(uuid)
 );
 
+CREATE INDEX infrastructure_type__name_idx ON infrastructure(name);
+
 INSERT INTO infrastructure_type(
     name,
     last_update,
@@ -184,5 +188,41 @@ VALUES
     'db-init',
     '{a1345678-1234-5678-1234-567812345678}',
     '{12345678-1234-5678-1234-567812345678}'
+);
+
+/*The point of intrest table which referenece the infrastructure type  */
+CREATE TABLE point_of_interest(
+    id SERIAL NOT NULL PRIMARY KEY , 
+    name TEXT NOT NULL, 
+    image TEXT NULL, 
+    condition TEXT NOT NULL, 
+    height NUMERIC(3),
+    last_update TIMESTAMP DEFAULT NOW(),
+    last_update_by TEXT NOT NULL, 
+    uuid TEXT NOT NULL, 
+    full_image_path TEXT NULL, 
+    has_image BOOLEAN NOT NULL,
+    infrastructure_type_uuid TEXT NOT NULL REFERENCES infrastructure_type(uuid)
+);
+
+INSERT INTO point_of_interest(
+    name,
+    condition,
+    height,
+    last_update_by,
+    has_image,
+    uuid, 
+    infrastructure_type_uuid
+)
+VALUES 
+(
+    'db-point',
+    'good',
+    3.4,
+    'db-init',
+    FALSE,
+    '{a13g5678-1234-5678-1234-567812345678}',
+    '{a1345678-1234-5678-1234-567812345678}'
+    
 )
 -- ----------------------------------
