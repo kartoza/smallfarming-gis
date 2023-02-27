@@ -158,5 +158,31 @@ VALUES
 
 -- ----------------------------------
 
+/*This is the infrastructure type table which reference a foriegn key in the infrastructure table */
+CREATE TABLE infrastructure_type(
+    id SERIAL NOT NULL PRIMARY KEY , 
+    name TEXT NOT NULL, 
+    notes TEXT NULL,
+    last_update TIMESTAMP DEFAULT now() NOT NULL, 
+    last_update_by TEXT NOT NULL,
+    uuid TEXT UNIQUE NOT NULL,
+    infrastructure_uuid TEXT NOT NULL REFERENCES infrastructure(uuid)
+);
 
+INSERT INTO infrastructure_type(
+    name,
+    last_update,
+    last_update_by,
+    uuid,
+    infrastructure_uuid
+)
+
+VALUES 
+(   
+    'lake',
+    now(),
+    'db-init',
+    '{a1345678-1234-5678-1234-567812345678}',
+    '{12345678-1234-5678-1234-567812345678}'
+)
 -- ----------------------------------
