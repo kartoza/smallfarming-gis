@@ -131,4 +131,32 @@ INSERT INTO water_lines (
     '{71646565-a4d8-47eb-8531-4e61341573da}'
 );
 
+CREATE TABLE infrastructure (
+    id SERIAL NOT NULL PRIMARY KEY, 
+    name TEXT UNIQUE NOT NULL,
+    last_update TIMESTAMP DEFAULT now() NOT NULL,
+    last_update_by TEXT NOT NULL, 
+    uuid TEXT UNIQUE NOT NULL
+);
+
+/*Infrastructure table */
+
+INSERT INTO infrastructure (
+    name,
+    last_update_by,
+    uuid,
+    last_update
+)
+VALUES 
+(
+    'water resources',
+    'db-init',
+    '{12345678-1234-5678-1234-567812345678}',
+    now()
+
+);
+
+-- ----------------------------------
+
+
 -- ----------------------------------
