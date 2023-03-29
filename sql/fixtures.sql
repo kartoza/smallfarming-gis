@@ -63,3 +63,10 @@ INSERT INTO water_point_type (last_update_by, name) VALUES ('Polly', 'Water Tank
 INSERT INTO water_line_type (last_update_by, name, sort_order) VALUES ('Polly', 'River', 1);
 INSERT INTO water_line_type (last_update_by, name, sort_order) VALUES ('Polly', 'Stream', 2);
 INSERT INTO water_line_type (last_update_by, name, sort_order) VALUES ('Polly', 'Drinking Trough', 3);
+
+
+-- infrastructure conditions 
+
+INSERT INTO infrastructure_condition (last_update_by, name) VALUES ('Robert','Good');
+INSERT INTO infrastructure_condition (last_update_by, name) VALUES ('Robert','Fair');
+INSERT INTO infrastructure_condition (last_update_by, name) VALUES ('Robert','Poor');
