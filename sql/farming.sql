@@ -70,28 +70,42 @@ COMMENT ON COLUMN infrastructure_log_action.notes is 'Additional information of 
 COMMENT ON COLUMN infrastructure_log_action.image is 'Image of the action taken.';
 
 
+-- INFRASTRUCTURE CONDITION 
+CREATE TABLE infrastructure_condition(
+	id SERIAL NOT NULL PRIMARY KEY, 
+	uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(), 
+	last_update TIMESTAMP DEFAULT now() NOT NULL,
+	last_update_by TEXT NOT NULL, 
+	name TEXT UNIQUE NOT NULL, 
+	notes TEXT
+);
+COMMENT ON TABLE infrastructure_condition IS 'This refers to the state of the infrastructure item with regards to it''s appearance, quality, or working order';
+COMMENT ON COLUMN infrastructure_condition.id is 'The unique management condition ID. Primary Key.';
+COMMENT ON COLUMN infrastructure_condition.UUID  is 'The unique user ID. ';
+COMMENT ON COLUMN infrastructure_condition.last_update is  'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
+COMMENT ON COLUMN infrastructure_condition.last_update_by is 'The name of the user responsible for the latest update.';
+COMMENT ON COLUMN infrastructure_condition.name is 'Name of the condition ';
+COMMENT ON COLUMN infrastructure_condition.notes is 'Additional information explaining the condition ';
+
 -- INFRASTRUCTURE MANAGEMENT LOG 
 CREATE TABLE infrastructure_management_log(
     	id SERIAL NOT NULL PRIMARY KEY, 
 		uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
     	last_update TIMESTAMP DEFAULT now() NOT NULL,
     	last_update_by TEXT NOT NULL,
-        name TEXT UNIQUE NOT NULL, 
 		notes TEXT, 
 		image TEXT,
-    	condition TEXT NOT NULL, 
     	infrastructure_item_uuid UUID NOT NULL REFERENCES infrastructure_item(uuid),
-    	infrastructure_log_action_uuid UUID NOT NULL REFERENCES infrastructure_log_action (uuid)
+    	infrastructure_log_action_uuid UUID NOT NULL REFERENCES infrastructure_log_action (uuid),
+		infrastructure_condition_uuid UUID NOT NULL REFERENCES infrastructure_condition (uuid)
 );
 COMMENT ON TABLE infrastructure_management_log IS 'Infrastructure management log refers to the process of task that needs to be done on an infrastructure item, e.g. Repair.';
 COMMENT ON COLUMN infrastructure_management_log.id is 'The unique management log ID. Primary Key.';
 COMMENT ON COLUMN infrastructure_management_log.uuid is 'The unique user ID.';
 COMMENT ON COLUMN infrastructure_management_log.last_update is 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
 COMMENT ON COLUMN infrastructure_management_log.last_update_by is 'The name of the user responsible for the latest update.';
-COMMENT ON COLUMN infrastructure_management_log.name is 'The name of the process.';
 COMMENT ON COLUMN infrastructure_management_log.notes is 'Additional information of the process.';
 COMMENT ON COLUMN infrastructure_management_log.image is 'Image of the work flow.';
-COMMENT ON COLUMN infrastructure_management_log.condition is 'Circumstances or factors affecting the infrastructure item type.';
 
 
 ----------------------------------------ELECTRICITY-------------------------------------
