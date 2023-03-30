@@ -1,7 +1,5 @@
---create database farming;
+create database farming;
 		-- add connect statement here
-
-		
 
 create extension postgis;
 
@@ -37,7 +35,7 @@ CREATE TABLE infrastructure_item(
 		notes TEXT, 
 		image TEXT,
     	geometry GEOMETRY (POINT, 4326), 
-    	infrastructure_type_uuid UUID NOT NULL REFERENCES infrastructure_type(uuid)
+    	infrastructure_type_uuid UUID NOT NULL REFERENCES infrastructure_type(uuid)  DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE infrastructure_item IS 'Infrastructure item refers to any physical components found in the area, e.g. desk, chair.';
 COMMENT ON COLUMN infrastructure_item.id is 'The unique infrastructure item ID. Primary Key.';
@@ -93,11 +91,11 @@ CREATE TABLE infrastructure_management_log(
 		uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
     	last_update TIMESTAMP DEFAULT now() NOT NULL,
     	last_update_by TEXT NOT NULL,
-		notes TEXT, 
+		notes TEXT NOT NULL, 
 		image TEXT,
-    	infrastructure_item_uuid UUID NOT NULL REFERENCES infrastructure_item(uuid),
-    	infrastructure_log_action_uuid UUID NOT NULL REFERENCES infrastructure_log_action (uuid),
-		infrastructure_condition_uuid UUID NOT NULL REFERENCES infrastructure_condition (uuid)
+    	infrastructure_item_uuid UUID NOT NULL REFERENCES infrastructure_item(uuid)  DEFERRABLE INITIALLY DEFERRED,
+    	infrastructure_log_action_uuid UUID NOT NULL REFERENCES infrastructure_log_action (uuid) DEFERRABLE INITIALLY DEFERRED,
+		infrastructure_condition_uuid UUID NOT NULL REFERENCES infrastructure_condition (uuid)  DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE infrastructure_management_log IS 'Infrastructure management log refers to the process of task that needs to be done on an infrastructure item, e.g. Repair.';
 COMMENT ON COLUMN infrastructure_management_log.id is 'The unique management log ID. Primary Key.';
@@ -144,10 +142,10 @@ CREATE TABLE electricity_line (
 		uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
     	last_update TIMESTAMP DEFAULT now() NOT NULL,
     	last_update_by TEXT NOT NULL,
-		notes TEXT, 
+		notes TEXT NOT NULL, 
 		image TEXT,
 		geometry GEOMETRY(LINESTRING, 4326) NOT NULL,
-		electricity_line_type_uuid UUID NOT NULL REFERENCES electricity_line_type(uuid)
+		electricity_line_type_uuid UUID NOT NULL REFERENCES electricity_line_type(uuid)  DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE electricity_line IS 'Electricity line refers to the geolocated wire or conductor used for transmitting or supplying electricity.';
 COMMENT ON COLUMN electricity_line.id is 'The unique electricity line ID. Primary key.';
@@ -187,11 +185,11 @@ CREATE TABLE electricity_line_conditions (
 	    uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
     	last_update TIMESTAMP DEFAULT now() NOT NULL,
     	last_update_by TEXT NOT NULL, 
-		notes TEXT, 
+		notes TEXT NOT NULL, 
 		image TEXT,
 		date DATE NOT NULL,
-		electricity_line_uuid UUID NOT NULL REFERENCES electricity_line(uuid),
-		electricity_line_condition_uuid UUID NOT NULL REFERENCES electricity_line_condition_type(uuid),
+		electricity_line_uuid UUID NOT NULL REFERENCES electricity_line(uuid)  DEFERRABLE INITIALLY DEFERRED,
+		electricity_line_condition_uuid UUID NOT NULL REFERENCES electricity_line_condition_type(uuid)  DEFERRABLE INITIALLY DEFERRED,
 		-- Composite primary key
 		PRIMARY KEY (electricity_line_uuid, electricity_line_condition_uuid, date),
 		-- Unique together
@@ -261,8 +259,8 @@ CREATE TABLE water_polygon(
 		CONSTRAINT depth_check check(
 			estimated_depth_m >= 0 and estimated_depth_m <= 20),
 		geometry GEOMETRY(POLYGON, 4326),
-		water_source_uuid UUID NOT NULL REFERENCES water_source(uuid),
-		water_polygon_type_uuid UUID NOT NULL REFERENCES water_polygon_type(uuid)
+		water_source_uuid UUID NOT NULL REFERENCES water_source(uuid)  DEFERRABLE INITIALLY DEFERRED,
+		water_polygon_type_uuid UUID NOT NULL REFERENCES water_polygon_type(uuid) DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE water_polygon IS 'Water polygon refers to the geolocated land areas that are covered in water, either intermittently or constantly, e.g. River.';
 COMMENT ON COLUMN water_polygon.id is 'The unique water polygon ID. Primary Key.';
@@ -304,8 +302,8 @@ CREATE TABLE water_point(
 		notes TEXT, 
 		image TEXT,
 		geometry GEOMETRY (POINT, 4326),
-		water_source_uuid UUID NOT NULL REFERENCES water_source(uuid),
-		water_point_type_uuid UUID NOT NULL REFERENCES water_point_type(uuid)
+		water_source_uuid UUID NOT NULL REFERENCES water_source(uuid)  DEFERRABLE INITIALLY DEFERRED,
+		water_point_type_uuid UUID NOT NULL REFERENCES water_point_type(uuid)  DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE water_point is 'Water point refers to the geolocated water site that is available for use, e.g. Tap.';
 COMMENT ON COLUMN water_point.id is 'The unique water point ID. Primary Key.';
@@ -361,8 +359,8 @@ CREATE TABLE water_line(
 		CONSTRAINT estimated_depth_m check(
 			estimated_depth_m >= 0),
 		geometry GEOMETRY(LINESTRING, 4326),
-		water_source_uuid UUID NOT NULL REFERENCES water_source(uuid),
-		water_line_type_uuid UUID NOT NULL REFERENCES water_line_type(uuid)
+		water_source_uuid UUID NOT NULL REFERENCES water_source(uuid)  DEFERRABLE INITIALLY DEFERRED,
+		water_line_type_uuid UUID NOT NULL REFERENCES water_line_type(uuid) DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE water_line is 'This is the geolocated path the water lines follow.';
 COMMENT ON COLUMN water_line.id is 'The unique water line ID. Primary Key.';
@@ -495,7 +493,7 @@ CREATE TABLE vegetation_point(
 		constraint height_check check(
 			estimated_height_m >= 0),
 		geometry GEOMETRY(POINT, 4326) NOT NULL, 
-		plant_type_uuid UUID NOT NULL REFERENCES plant_type(uuid)
+		plant_type_uuid UUID NOT NULL REFERENCES plant_type(uuid)  DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE vegetation_point IS 
 'Vegetation point refers a geolocated plant. Table stores the individual plant location and the properties.';
@@ -516,21 +514,19 @@ CREATE TABLE pruning_activity(
 		id SERIAL NOT NULL PRIMARY KEY,
 		uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
     	last_update TIMESTAMP DEFAULT now() NOT NULL,
-    	last_update_by TEXT NOT NULL,
-        name TEXT UNIQUE NOT NULL, 
-		notes TEXT, 
+    	last_update_by TEXT NOT NULL, 
+		notes TEXT NOT NULL, 
 		image TEXT,
 		date DATE NOT NULL,
 		before_image TEXT,
 		after_image TEXT,
-		vegetation_point_uuid UUID NOT NULL REFERENCES vegetation_point(uuid)
+		vegetation_point_uuid UUID NOT NULL REFERENCES vegetation_point(uuid)  DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE pruning_activity IS 'Pruning activity refers to the trimming of unwanted parts of a plant.';
 COMMENT ON COLUMN pruning_activity.id IS 'The unique pruning activity ID. This is the Primary Key.';
 COMMENT ON COLUMN pruning_activity.uuid is 'The unique user ID.';
 COMMENT ON COLUMN pruning_activity.last_update is 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
 COMMENT ON COLUMN pruning_activity.last_update_by is 'The name of the user responsible for the latest update.';
-COMMENT ON COLUMN pruning_activity.name is 'The name of the pruning activity.';
 COMMENT ON COLUMN pruning_activity.notes is 'Additional information of the  pruning activity.';
 COMMENT ON COLUMN pruning_activity.image is 'Image of the  pruning activity.';
 COMMENT ON COLUMN pruning_activity.date IS 'The date of the pruning activity (yyyy:mm:dd).';
@@ -544,19 +540,17 @@ CREATE TABLE harvest_activity(
 		uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
     	last_update TIMESTAMP DEFAULT now() NOT NULL,
     	last_update_by TEXT NOT NULL,
-        name TEXT UNIQUE NOT NULL, 
-		notes TEXT, 
+		notes TEXT NOT NULL, 
 		image TEXT,
 		date DATE NOT NULL,
 		quantity_kg FLOAT,
-		vegetation_point_uuid UUID NOT NULL REFERENCES vegetation_point(uuid)
+		vegetation_point_uuid UUID NOT NULL REFERENCES vegetation_point(uuid)  DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE harvest_activity IS 'Harvest activity refers to the gathering of ripe crop or fruits.';
 COMMENT ON COLUMN harvest_activity.id IS 'The unique harvest activity ID. This is the Primary Key.';
 COMMENT ON COLUMN harvest_activity.uuid is 'The unique user ID.';
 COMMENT ON COLUMN harvest_activity.last_update is 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
 COMMENT ON COLUMN harvest_activity.last_update_by is 'The name of the user responsible for the latest update.';
-COMMENT ON COLUMN harvest_activity.name is 'The name of the harvest activity.';
 COMMENT ON COLUMN harvest_activity.notes is 'Additional information of the harvest activity.';
 COMMENT ON COLUMN harvest_activity.image is 'Image of the harvest activity.';
 COMMENT ON COLUMN harvest_activity.date IS 'The date of the harvest activity (yyyy:mm:dd).';
@@ -566,9 +560,9 @@ COMMENT ON COLUMN harvest_activity.quantity_kg IS 'The quantity of harvest measu
 -- ASSOCIATION TABLES
 -- PLANT GROWTH ACTIVITIES
 CREATE TABLE plant_growth_activities(
-		fk_plant_activity_uuid UUID  NOT NULL REFERENCES plant_growth_activity_type(uuid),
-		fk_plant_type_uuid UUID NOT NULL REFERENCES plant_type(uuid),
-		fk_month_uuid UUID  NOT NULL REFERENCES month(uuid),
+		fk_plant_activity_uuid UUID  NOT NULL REFERENCES plant_growth_activity_type(uuid)  DEFERRABLE INITIALLY DEFERRED,
+		fk_plant_type_uuid UUID NOT NULL REFERENCES plant_type(uuid)  DEFERRABLE INITIALLY DEFERRED,
+		fk_month_uuid UUID  NOT NULL REFERENCES month(uuid)  DEFERRABLE INITIALLY DEFERRED,
 		-- 	Composite primary key using the three foreign keys above
 		PRIMARY KEY (fk_plant_activity_uuid, fk_plant_type_uuid, fk_month_uuid)
 );
@@ -580,8 +574,8 @@ COMMENT ON COLUMN plant_growth_activities.fk_month_uuid IS 'The foreign key link
 
 -- PLANT TYPE USAGES
 CREATE TABLE plant_type_usages(
-		fk_plant_usage_uuid UUID NOT NULL REFERENCES plant_usage(uuid),
-		fk_plant_type_uuid UUID NOT NULL REFERENCES plant_type(uuid),
+		fk_plant_usage_uuid UUID NOT NULL REFERENCES plant_usage(uuid)  DEFERRABLE INITIALLY DEFERRED,
+		fk_plant_type_uuid UUID NOT NULL REFERENCES plant_type(uuid)  DEFERRABLE INITIALLY DEFERRED,
 		PRIMARY KEY (fk_plant_usage_uuid, fk_plant_type_uuid)
 );
 COMMENT ON TABLE plant_type_usages IS 
