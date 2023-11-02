@@ -2180,3 +2180,5 @@ column pole.pole_material_id is 'Foreign key pole material';
 
 comment on 
 column pole.pole_function_id is 'Foreign key pole function';
+
+
