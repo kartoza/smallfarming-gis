@@ -1107,3 +1107,113 @@ COMMENT ON COLUMN landuse_area_conditions.date iS 'The datetime alteration of th
 COMMENT ON COLUMN landuse_area_conditions.landuse_area_uuid is 'The foreign key linking to the landuse area table''s UUID.';
 COMMENT ON COLUMN landuse_area_conditions.landuse_area_condition_type_uuid is 'The foreign key linking to the landuse area condition type table''s UUID.';
 
+CREATE extension if not exists postgis;
+
+----------------------------------------FAUNA-------------------------------------
+-- ANIMAL ACTIVITY
+CREATE TABLE if not exists activity (
+id SERIAL NOT NULL primary key,
+name TEXT UNIQUE NOT null,
+last_update TIMESTAMP DEFAULT NOW() NOT NULL,
+last_update_by TEXT NOT NULL, 
+uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid()
+);
+
+COMMENT ON TABLE activity  IS 'activity refers to any activity that the animal is doing at the time of observation, e.g. feeding, resting.';
+COMMENT ON COLUMN activity.id is 'The unique activity ID. Primary Key.';
+COMMENT ON COLUMN activity.name is 'The name of the activity.';
+COMMENT ON COLUMN activity.last_update  is 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
+COMMENT ON COLUMN activity.last_update_by is 'The name of the user responsible for the latest update.';
+COMMENT ON COLUMN activity.uuid is 'The unique user ID.';
+
+
+-- ANIMAL HABITAT
+CREATE TABLE if not exists habitat (
+id SERIAL NOT NULL primary key,
+name TEXT UNIQUE NOT null,
+last_update TIMESTAMP DEFAULT NOW() NOT NULL,
+last_update_by TEXT NOT NULL, 
+uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid()
+);
+
+COMMENT ON TABLE habitat  IS 'habitat refers to any habitat that the animal is found in during the time of observation, e.g. savanna, grassland.';
+COMMENT ON COLUMN habitat.id is 'The unique  habitat ID. Primary Key.';
+COMMENT ON COLUMN habitat.name is 'The name of the habitat.';
+COMMENT ON COLUMN habitat.last_update  is 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
+COMMENT ON COLUMN habitat.last_update_by is 'The name of the user responsible for the latest update.';
+COMMENT ON COLUMN habitat.uuid is 'The unique user ID.';
+
+
+-- ANIMAL TAXON_RANK
+CREATE TABLE if not exists taxon_rank (
+id SERIAL NOT NULL primary key,
+name TEXT UNIQUE NOT null,
+last_update TIMESTAMP DEFAULT NOW() NOT NULL,
+last_update_by TEXT NOT NULL, 
+uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid()
+);
+
+COMMENT ON TABLE taxon_rank IS 'taxon_rank  refers to the name of the taxon level of which the animal is recorded, e.g. species level, genus level.';
+COMMENT ON COLUMN taxon_rank.id is 'The unique taxon_rank ID. Primary Key.';
+COMMENT ON COLUMN taxon_rank.name is 'The name of the taxon_rank.';
+COMMENT ON COLUMN taxon_rank.last_update  is 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
+COMMENT ON COLUMN taxon_rank.last_update_by is 'The name of the user responsible for the latest update.';
+COMMENT ON COLUMN taxon_rank.uuid is 'The unique user ID.';
+
+
+-- ANIMAL TAXON
+CREATE TABLE if not exists taxon (
+id SERIAL NOT NULL primary key,
+scientific_name TEXT UNIQUE NOT NULL,
+common_name TEXT,
+notes TEXT,
+image TEXT,
+last_update TIMESTAMP DEFAULT NOW() NOT NULL,
+last_update_by TEXT NOT NULL, 
+uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
+taxon_rank_id UUID NOT NULL REFERENCES taxon_rank(uuid),
+parent_id UUID NOT NULL REFERENCES taxon(uuid)
+);
+
+COMMENT ON TABLE taxon IS 'taxon refers to the name of the taxon, e.g. species, genus.';
+COMMENT ON COLUMN taxon.id is 'The unique taxon ID. Primary Key.';
+COMMENT ON COLUMN taxon.scientific_name is 'The scientifically given name of the species used for ranking animal species easier.';
+COMMENT ON COLUMN taxon.common_name is 'The simple english name given to an animal, commonly used by everyone.';
+COMMENT ON COLUMN taxon.notes is 'Additional information of the taxon.';
+COMMENT ON COLUMN taxon.image is 'Image of the taxon.';
+COMMENT ON COLUMN taxon.last_update  is 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
+COMMENT ON COLUMN taxon.last_update_by is 'The name of the user responsible for the latest update.';
+COMMENT ON COLUMN taxon.uuid is 'The unique user ID.';
+
+
+
+-- ANIMAL OBSERVATION
+CREATE TABLE if not exists animal_observation (
+id SERIAL NOT NULL,
+geometry GEOMETRY (POINT, 4326),
+notes TEXT,
+image TEXT,
+observation_time TIMESTAMP DEFAULT NOW() NOT NULL,
+last_update TIMESTAMP DEFAULT NOW() NOT NULL,
+last_update_by text not null,
+uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
+taxon_id UUID NOT NULL REFERENCES taxon(uuid),
+activity_id UUID NOT NULL REFERENCES activity(uuid),
+habitat_id UUID NOT NULL REFERENCES habitat(uuid)
+);
+
+COMMENT ON COLUMN animal_observation.id is 'The unique animal_observation ID. Primary Key.';
+COMMENT ON COLUMN animal_observation.geometry is 'The centroid location of the animal_observation. Follows EPSG: 4326.';
+COMMENT ON COLUMN animal_observation.notes is 'Additional information of the animal observation.';
+COMMENT ON COLUMN animal_observation.image is 'Image of the animal.';
+COMMENT ON COLUMN animal_observation.observation_time  is 'The date that the observation was made (yyyy-mm-dd hh:mm:ss).';
+COMMENT ON COLUMN animal_observation.last_update is 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
+COMMENT ON COLUMN animal_observation.last_update_by is 'The name of the user responsible for the latest update.';
+COMMENT ON COLUMN animal_observation.uuid is 'The unique user ID.';
+
+
+
+
+
+-- ANIMAL OBSERVATION
+insert into habitat (LAST_UPDATE_BY) values (DESERT, MPILWENHLE)
