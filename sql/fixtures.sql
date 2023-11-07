@@ -90,3 +90,31 @@ INSERT INTO point_of_interest_type (last_update_by, name, sort_order) VALUES ('J
 INSERT INTO "condition"  (last_update_by, name) VALUES ('Jeff', 'Fixed');
 INSERT INTO "condition"  (last_update_by, name) VALUES ('Jeff', 'Broken');
 
+----------------------------------------FAUNA-------------------------------------
+-- ANIMAL ACTIVITY
+insert into activity (NAME, LAST_UPDATE_BY) values ('FEEDING', 'MPILWENHLE');
+insert into activity (NAME, LAST_UPDATE_BY) values ('DRINKING, 'MPILWENHLE)'';
+insert into activity (NAME, LAST_UPDATE_BY) values (MIGRATING, MPILWENHLE);
+insert into activity (NAME, LAST_UPDATE_BY) values (RESTING, MPILWENHLE);
+insert into activity (NAME, LAST_UPDATE_BY) values (RUNNING, MPILWENHLE);
+
+--ANIMAL HABITAT
+insert into habitat (NAME, LAST_UPDATE_BY) values (FOREST, MPILWENHLE);
+insert into habitat (NAME, LAST_UPDATE_BY) values (SAVANNA, MPILWENHLE);
+insert into habitat (NAME, LAST_UPDATE_BY) values (ARTIC, MPILWENHLE);
+insert into habitat (NAME, LAST_UPDATE_BY) values (OCEAN, MPILWENHLE);
+insert into habitat (NAME, LAST_UPDATE_BY) values (GRASSLAND, MPILWENHLE);
+insert into habitat (NAME, LAST_UPDATE_BY) values (KAROO, MPILWENHLE);
+insert into habitat (NAME, LAST_UPDATE_BY) values (DESERT, MPILWENHLE);
+
+
+-- ANIMAL TAXON_RANK
+insert into taxon_rank (NAME, LAST_UPDATE_BY) values (SPECIES, MPILWENHLE);
+
+
+-- ANIMAL TAXON
+insert into taxon (SCIENTIFIC_NAME, COMMON_NAME, LAST_UPDATE_BY) values (Capra aegagrus hircus, GOAT, MPILWENHLE);
+insert into taxon (SCIENTIFIC_NAME, COMMON_NAME, LAST_UPDATE_BY) values (Equus caballus, HORSE, MPILWENHLE);
+insert into taxon (SCIENTIFIC_NAME, COMMON_NAME, LAST_UPDATE_BY) values (Antidorcas marsupialis, SPRINGBOK, MPILWENHLE);
+insert into taxon (SCIENTIFIC_NAME, COMMON_NAME, LAST_UPDATE_BY) values (Aepyceros melampus, IMPALA, MPILWENHLE);
+insert into taxon (SCIENTIFIC_NAME, COMMON_NAME, LAST_UPDATE_BY) values (Sciuridae, SQUIRREL, MPILWENHLE);
