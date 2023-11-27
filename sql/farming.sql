@@ -1107,6 +1107,286 @@ COMMENT ON COLUMN landuse_area_conditions.date iS 'The datetime alteration of th
 COMMENT ON COLUMN landuse_area_conditions.landuse_area_uuid is 'The foreign key linking to the landuse area table''s UUID.';
 COMMENT ON COLUMN landuse_area_conditions.landuse_area_condition_type_uuid is 'The foreign key linking to the landuse area condition type table''s UUID.';
 
+=======
+-- Gates: added by Jeremy Ferris
+CREATE TABLE IF NOT EXISTS gate_type (
+        id SERIAL NOT NULL PRIMARY KEY,
+    uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
+        last_update timestamp default now() NOT NULL,
+        last_update_by TEXT,
+        name TEXT UNIQUE NOT NULL, -- primary_type
+    notes TEXT,
+    image TEXT
+);
+COMMENT ON TABLE gate_type IS 'Describes the type of gate.';
+COMMENT ON COLUMN gate_type.id IS 'The unique management log ID. Primary Key.';
+COMMENT ON COLUMN gate_type.uuid IS 'Universal Unique Identifier.';
+COMMENT ON COLUMN gate_type.last_update IS 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
+COMMENT ON COLUMN gate_type.last_update_by IS 'The name of the user responsible for the latest update.';
+COMMENT ON COLUMN gate_type.name IS 'The type of gate.';
+COMMENT ON COLUMN gate_type.notes is 'Additional information about the gate type.';
+COMMENT ON COLUMN gate_type.image is 'Path to the image file of a picture representing the gate type.';
+
+CREATE TABLE IF NOT EXISTS gate_function (
+        id SERIAL NOT NULL PRIMARY KEY,
+    uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
+        last_update TIMESTAMP default now() NOT NULL,
+        last_update_by TEXT,
+        name TEXT UNIQUE NOT NULL, -- primary_function
+    notes TEXT,
+    image TEXT
+);
+COMMENT ON TABLE gate_function IS 'This table lists the functions that a gate can perform';
+COMMENT ON COLUMN gate_function.id IS 'The unique management log ID. Primary Key.';
+COMMENT ON COLUMN gate_function.uuid IS 'Universal Unique Identifier.';
+COMMENT ON COLUMN gate_function.last_update IS 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
+COMMENT ON COLUMN gate_function.last_update_by IS 'The name of the user responsible for the latest update.';
+COMMENT ON COLUMN gate_function.name IS 'Name of the gate function.';
+COMMENT ON COLUMN gate_function.notes is 'Additional information about the gate function.';
+COMMENT ON COLUMN gate_function.image is 'Path to the image file of a picture representing the gate function.';
+
+
+CREATE TABLE IF NOT EXISTS gate_material (
+        id SERIAL NOT NULL PRIMARY KEY,
+    uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
+        last_update TIMESTAMP default now() NOT NULL,
+        last_update_by TEXT,
+        name TEXT UNIQUE NOT NULL, -- material
+    notes TEXT,
+    image TEXT
+);
+COMMENT ON TABLE gate_material IS 'This table lists the materials that a gate can consist of.';
+COMMENT ON COLUMN gate_material.id IS 'The unique management log ID. Primary Key.';
+COMMENT ON COLUMN gate_material.uuid IS 'Universal Unique Identifier.';
+COMMENT ON COLUMN gate_material.last_update IS 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
+COMMENT ON COLUMN gate_material.last_update_by IS 'The name of the user responsible for the latest update.';
+COMMENT ON COLUMN gate_material.name IS 'Name of the gate material.';
+COMMENT ON COLUMN gate_material.notes is 'Additional information about the gate material.';
+COMMENT ON COLUMN gate_material.image is 'Path to the image file of a picture representing the gate material.';
+
+
+CREATE TABLE IF NOT EXISTS gate (
+        id SERIAL NOT NULL PRIMARY KEY,
+    uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
+        last_update TIMESTAMP DEFAULT now() NOT NULL,
+        last_update_by TEXT NOT NULL,
+        name TEXT NOT NULL,
+    notes TEXT,
+    pic TEXT,
+    geometry GEOMETRY(point, 4326) NOT NULL,
+    height_m FLOAT,
+    width_m FLOAT,
+    installation_date DATE NOT NULL,
+    is_date_estimated BOOLEAN,
+    gate_direction_from_hinge_when_closed FLOAT NOT NULL,
+    gate_open_maximum_degrees FLOAT,
+    gate_open_minimum_degrees FLOAT,
+    gate_type_uuid UUID REFERENCES gate_type(uuid),
+    gate_function_uuid UUID REFERENCES gate_function(uuid)
+);
+COMMENT ON TABLE gate IS 'Items in the gate table can stand alone or be referenced from other entities like buildings and fences.';
+COMMENT ON COLUMN gate.id IS 'The unique management log ID. Primary Key.';
+COMMENT ON COLUMN gate.uuid IS 'Universal Unique Identifier.';
+COMMENT ON COLUMN gate.last_update IS 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
+COMMENT ON COLUMN gate.last_update_by IS 'The name of the user responsible for the latest update.';
+COMMENT ON COLUMN gate.geometry IS 'This is the point where the gate is mounted (ie. the hinge side).';
+COMMENT ON COLUMN gate.height_m IS 'Enter the height of the gate in meters.';
+COMMENT ON COLUMN gate.width_m IS 'Enter the width of the gate in meters.';
+COMMENT ON COLUMN gate.installation_date IS 'Enter the date the gate was installed. This can be an approximate date.';
+COMMENT ON COLUMN gate.is_date_estimated IS 'Was the gate installation date estimated?';
+COMMENT ON COLUMN gate.gate_direction_from_hinge_when_closed IS 'What direction does the gate go from the hinge? North = 0, East = 90, South = 180, West = 270, Maximum 360 (back to North)';
+COMMENT ON COLUMN gate.gate_open_maximum_degrees IS 'Positive clockwise degrees the gate will open (zero if the gate only opens counterclockwise)';
+COMMENT ON COLUMN gate.gate_open_minimum_degrees IS 'Negative counter-clockwise degrees that the gate opens (zero if the gate only opens clockwise)';
+COMMENT ON COLUMN gate.gate_type_uuid IS 'The foreign key which references the uuid from the gate_type table.';
+COMMENT ON COLUMN gate.gate_function_uuid IS 'The foreign key which references the uuid from the gate_function table.';
+
+-- Association table for materials the gate consists of
+CREATE TABLE IF NOT EXISTS gate_materials (
+	PRIMARY KEY (gate_uuid, gate_material_uuid),
+    uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
+        last_update TIMESTAMP default now() NOT NULL,
+        last_update_by TEXT,
+        name TEXT NOT NULL,
+    notes TEXT,
+    image TEXT,
+    gate_uuid UUID NOT NULL REFERENCES gate(uuid),
+	gate_material_uuid UUID NOT NULL REFERENCES gate_material(uuid)
+);
+COMMENT ON TABLE gate_materials IS 'A gate can be comprised of various and multiple materials that are selected from the material list.';
+-- Not sure how to reference composite primary key
+COMMENT ON COLUMN gate_materials.uuid IS 'Universal Unique Identifier.';
+COMMENT ON COLUMN gate_materials.last_update IS 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
+COMMENT ON COLUMN gate_materials.last_update_by IS 'The name of the user responsible for the latest update.';
+COMMENT ON COLUMN gate_materials.name IS 'Name of the gate material.';
+COMMENT ON COLUMN gate_materials.notes is 'Additional information about the gate material.';
+COMMENT ON COLUMN gate_materials.image is 'Path to the image file of a picture representing the gate material.';
+COMMENT ON COLUMN gate_materials.gate_uuid IS 'The foreign key which references the uuid from the gate table.';
+COMMENT ON COLUMN gate_materials.gate_material_uuid IS 'The foreign key which references the uuid from the gate_material table.';
+
+-- Table to associate Buildings with their respective gates
+CREATE TABLE IF NOT EXISTS building_gates (
+	PRIMARY KEY (building_uuid, gate_uuid),
+    uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
+        last_update TIMESTAMP default now() NOT NULL,
+        last_update_by TEXT,
+        name TEXT NOT NULL,
+    notes TEXT,
+    image TEXT,
+    building_uuid UUID NOT NULL REFERENCES building(uuid),
+	gate_uuid UUID NOT NULL REFERENCES gate(uuid)
+);
+COMMENT ON TABLE building_gates IS 'Gates that are attached to buildings.';
+-- Not sure how to reference composite primary key
+COMMENT ON COLUMN building_gates.uuid IS 'Universal Unique Identifier.';
+COMMENT ON COLUMN building_gates.last_update IS 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
+COMMENT ON COLUMN building_gates.last_update_by IS 'The name of the user responsible for the latest update.';
+COMMENT ON COLUMN building_gates.name IS 'Name of the gate.';
+COMMENT ON COLUMN building_gates.notes is 'Additional information about the gate.';
+COMMENT ON COLUMN building_gates.image is 'Path to the image file of a picture representing the gate.';
+COMMENT ON COLUMN building_gates.building_uuid IS 'The foreign key which references the uuid from the building table.';
+COMMENT ON COLUMN building_gates.gate_uuid IS 'The foreign key which references the uuid from the gate table.';
+
+-- Table to associate Fences with their respective gates
+CREATE TABLE IF NOT EXISTS fence_gates (
+	PRIMARY KEY (fence_uuid, gate_uuid),
+    uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
+        last_update TIMESTAMP default now() NOT NULL,
+        last_update_by TEXT,
+        name TEXT NOT NULL,
+    notes TEXT,
+    image TEXT,
+    
+    fence_uuid UUID NOT NULL REFERENCES fence(uuid),
+	gate_uuid UUID NOT NULL REFERENCES gate(uuid)
+);
+COMMENT ON TABLE fence_gates IS 'Gates that are attached to fences.';
+-- Not sure how to reference composite primary key
+COMMENT ON COLUMN fence_gates.uuid IS 'Universal Unique Identifier.';
+COMMENT ON COLUMN fence_gates.last_update IS 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
+COMMENT ON COLUMN fence_gates.last_update_by IS 'The name of the user responsible for the latest update.';
+COMMENT ON COLUMN fence_gates.name IS 'Name of the gate.';
+COMMENT ON COLUMN fence_gates.notes is 'Additional information about the gate.';
+COMMENT ON COLUMN fence_gates.image is 'Path to the image file of a picture representing the gate.';
+COMMENT ON COLUMN fence_gates.fence_uuid IS 'The foreign key which references the uuid from the fence table.';
+COMMENT ON COLUMN fence_gates.gate_uuid IS 'The foreign key which references the uuid from the gate table.';
+
+CREATE TABLE IF NOT EXISTS gate_conditions (
+        PRIMARY KEY (gate_uuid, condition_uuid, date),
+    uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
+        last_update TIMESTAMP default now() NOT NULL,
+        last_update_by TEXT,
+        name TEXT NOT NULL,
+    notes TEXT,
+    image TEXT,
+    date DATE NOT NULL, -- QUESTION: should this be datetime? if so, should we just use last_update instead?
+    gate_uuid UUID NOT NULL REFERENCES gate(uuid),
+    condition_uuid UUID NOT NULL REFERENCES condition(uuid)
+);
+COMMENT ON TABLE gate_conditions IS 'The gate_conditions table is an association table to record the conditions of gates at certain times.';
+-- Not sure how to reference composite primary key
+COMMENT ON COLUMN gate_conditions.uuid IS 'Universal Unique Identifier.';
+COMMENT ON COLUMN gate_conditions.last_update IS 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
+COMMENT ON COLUMN gate_conditions.last_update_by IS 'The name of the user responsible for the latest update.';
+COMMENT ON COLUMN gate_conditions.name IS 'Name of the gate condition.';
+COMMENT ON COLUMN gate_conditions.notes is 'Additional information about the gate condition.';
+COMMENT ON COLUMN gate_conditions.image is 'Path to the image file of a picture representing the gate condition.';
+COMMENT ON COLUMN gate_conditions.date is 'The date that the condition was observed.';
+COMMENT ON COLUMN gate_conditions.condition_uuid IS 'The foreign key which references the uuid from the condition table.';
+COMMENT ON COLUMN gate_conditions.gate_uuid IS 'The foreign key which references the uuid from the gate table.';
+
+-- Poles: By Charles Mudima
+--CREATE EXTENSION IF NOT EXISTS postgis;
+
+CREATE TABLE IF NOT EXISTS pole_material (
+    id serial NOT NULL PRIMARY KEY,
+    name TEXT UNIQUE NOT NULL,
+    notes TEXT,
+    image TEXT,
+    last_update TIMESTAMP DEFAULT now() NOT NULL, 
+    last_update_by TEXT NOT NULL,
+    uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid()
+);
+
+COMMENT ON TABLE pole_material IS 'Lookup table for the different pole materials available e.g steel, concrete.';
+COMMENT ON COLUMN pole_material.id IS 'The unique pole materials id, this is a primary key.';
+COMMENT ON COLUMN pole_material.name IS 'The name of the pole material.';
+COMMENT ON COLUMN pole_material.notes IS 'Any additional notes of the name of the pole material.';
+COMMENT ON COLUMN pole_material.picture IS 'Any visual representation of the material.';
+COMMENT ON COLUMN pole_material.last_update IS 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
+COMMENT ON COLUMN pole_material.last_update_by IS 'The name of the user responsible for the latest update.';
+COMMENT ON COLUMN pole_material.uuid IS 'Global unique indetifier.';
+
+CREATE TABLE IF NOT EXISTS pole_function(
+    id serial NOT NULL PRIMARY KEY,
+    FUNCTION TEXT NOT NULL,
+    notes TEXT,
+    image TEXT,
+    last_update TIMESTAMP DEFAULT now() NOT NULL,
+    last_update_by TEXT NOT NULL,
+    uuid uuid DEFAULT gen_random_uuid()
+);
+
+COMMENT ON TABLE pole_function IS 'Lookup table for the different pole function e.g telecommunincation pole.';
+COMMENT ON COLUMN pole_function.id IS 'The unique pole material id, this is a primary key.';
+COMMENT ON COLUMN pole_function.function IS 'The name of the function of a pole e.g street lighting pole or telecommunications pole.';
+COMMENT ON COLUMN pole_function.notes IS 'Any additional information on the pole functionality.';
+COMMENT ON COLUMN pole_function.picture IS 'Any visual representation of the pole function.';
+COMMENT ON COLUMN pole_function.last_update IS 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
+COMMENT ON COLUMN pole_function.last_update_by IS 'The name of the user responsible for the latest update.';
+COMMENT ON COLUMN pole_function.uuid IS 'Global unqie identifier.';
+
+CREATE TABLE IF NOT EXISTS pole (
+    id serial NOT NULL PRIMARY KEY,
+    notes VARCHAR(255),
+    installation_date DATE DEFAULT now() NOT NULL,
+    geometry GEOMETRY(POINT,
+4326) NOT NULL,
+height FLOAT NOT NULL,
+    last_update TIMESTAMP DEFAULT now() NOT NULL,
+    last_update_by TEXT NOT NULL,
+    uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
+    pole_material_id INT NOT NULL,
+pole_function_id INT NOT NULL,
+    FOREIGN KEY (pole_material_id) REFERENCES pole_material(id),
+    FOREIGN KEY (pole_function_id) REFERENCES pole_function(id)
+    );
+
+COMMENT ON TABLE pole IS 'Pole table records any point entered as a pole e.g street pole.';
+COMMENT ON COLUMN pole.notes IS 'Anything unique or additional information about the pole.';
+COMMENT ON COLUMN pole.installation_date IS 'The date and time when the pole was installed.';
+COMMENT ON COLUMN pole.height IS 'The height for the pole created.';
+COMMENT ON COLUMN pole.last_update IS 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
+COMMENT ON COLUMN pole.last_update_by IS 'The name of the user responsible for the latest update.';
+COMMENT ON COLUMN pole.pole_material_id IS 'Foreign key for pole material.';
+COMMENT ON COLUMN pole.pole_function_id IS 'Foreign key for pole function.';
+COMMENT ON COLUMN pole.uuid IS 'Global unique identifier.';
+
+CREATE TABLE IF NOT EXISTS pole_conditions(
+    pole_uuid UUID NOT NULL,
+    condition_uuid UUID NOT NULL,
+    PRIMARY KEY (pole_uuid,
+condition_uuid,
+date),
+notes TEXT NOT NULL,
+    image TEXT,
+    date Date NOT NULL,
+    last_update TIMESTAMP DEFAULT now() NOT NULL,
+    last_update_by TEXT NOT NULL,
+    uuid uuid DEFAULT gen_random_uuid(),
+    FOREIGN KEY (pole_uuid) REFERENCES pole(uuid),
+    FOREIGN KEY (condition_uuid) REFERENCES CONDITION(uuid)
+);
+
+COMMENT ON TABLE pole_conditions IS 'The table that records the state of a pole.';
+COMMENT ON COLUMN pole_conditions.pole_uuid IS 'A foreign key which is used as composite primary key.';
+COMMENT ON COLUMN pole_conditions.condition_uuid IS 'A foreign key which is used as composite primary key.';
+COMMENT ON COLUMN pole_conditions.notes IS 'Any additional information on the condition of the pole.';
+COMMENT ON COLUMN pole_conditions.date IS 'Stores the date that is used in the composite key.';
+COMMENT ON COLUMN pole_conditions.last_update IS 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
+COMMENT ON COLUMN pole_conditions.last_update_by IS 'The name of the user responsible for the latest update.';
+COMMENT ON COLUMN pole_conditions.uuid IS 'Global unique identifier.';
+
+
 CREATE extension if not exists postgis;
 
 ----------------------------------------FAUNA-------------------------------------
