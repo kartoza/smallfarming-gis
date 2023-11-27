@@ -112,4 +112,66 @@ INSERT INTO pole_function (id, last_update_by, "function") VALUES (4, 'Charles',
 -- Having an error on pole_uuid and condition_uuid
 --INSERT INTO pole_conditions (last_update_by, notes, "date", pole_uuid) VALUES ('Charles', 'Good', '10/11/2023', c52c5d28-d1aa-4780-b560-3dde03773374); 
 
+----------------------------------------FAUNA-------------------------------------
+--ANIMAL ACTIVITY
+INSERT INTO activity (name, last_update_by) VALUES ('feeding', 'Mpilwenhle');
+INSERT INTO activity (name, last_update_by) VALUES ('drinking', 'Mpilwenhle');
+INSERT INTO activity (name, last_update_by) VALUES ('mograting', 'Mpilwenhle');
+INSERT INTO activity (name, last_update_by) VALUES ('resting', 'Mpilwenhle');
+INSERT INTO activity (name, last_update_by) VALUES ('running', 'Mpilwenhle');
 
+--ANIMAL HABITAT
+INSERT INTO habitat (name, last_update_by) VALUES ('forest', 'Mpilwenhle');
+INSERT INTO habitat (name, last_update_by) VALUES ('savanna', 'Mpilwenhle');
+INSERT INTO habitat (name, last_update_by) VALUES ('artic', 'Mpilwenhle');
+INSERT INTO habitat (name, last_update_by) VALUES ('ocean', 'Mpilwenhle');
+INSERT INTO habitat (name, last_update_by) VALUES ('grassland', 'Mpilwenhle');
+INSERT INTO habitat (name, last_update_by) VALUES ('karoo', 'Mpilwenhle');
+INSERT INTO habitat (name, last_update_by) VALUES ('desert', 'Mpilwenhle');
+
+
+--ANIMAL TAXON_RANK
+INSERT INTO taxon_rank (name, last_update_by) VALUES ('Kingdom', 'Mpilwenhle');
+INSERT INTO taxon_rank (name, last_update_by) VALUES ('Phylum', 'Mpilwenhle');
+INSERT INTO taxon_rank (name, last_update_by) VALUES ('Family', 'Mpilwenhle');
+INSERT INTO taxon_rank (name, last_update_by) VALUES ('Order', 'Mpilwenhle');
+INSERT INTO taxon_rank (name, last_update_by) VALUES ('Class', 'Mpilwenhle');
+INSERT INTO taxon_rank (name, last_update_by) VALUES ('Genus', 'Mpilwenhle');
+INSERT INTO taxon_rank (name, last_update_by) VALUES ('Species', 'Mpilwenhle');
+
+--ANIMAL TAXON
+INSERT INTO taxon (scientific_name, last_update_by, taxon_rank_uuid, parent_uuid)
+VALUES ('Animalia', 'Mpilwenhle', '5a70ca78-7679-49ae-b672-76ab6ddac7ad', null);
+INSERT INTO taxon (scientific_name, last_update_by, taxon_rank_uuid, parent_uuid)
+VALUES ('Chordata', 'Mpilwenhle', '9493133d-0fde-420b-aa67-59909011eb8d', '8cdf3f7e-ec06-47f6-9da7-02a0aebbdbe3');
+INSERT INTO taxon (scientific_name, last_update_by, taxon_rank_uuid, parent_uuid)
+VALUES ('Mammalia', 'Mpilwenhle', '3053d90a-79c9-4d1c-8aa9-868d6329f5d9', '248e468a-e212-4069-8a33-926f5e1c1b43');
+INSERT INTO taxon (scientific_name, last_update_by, taxon_rank_uuid, parent_uuid)
+VALUES ('Artiodactyla', 'Mpilwenhle', 'b4abaf6e-8107-4ffb-84f1-940c970516ff', '249baeba-86cb-4316-a36d-4b2d434306c0');
+INSERT INTO taxon (scientific_name, last_update_by, taxon_rank_uuid, parent_uuid)
+VALUES ('Bovidae', 'Mpilwenhle', 'b8fb7897-d7c9-4923-8ce3-4cbece54d9c8', '7f7d3f92-a153-4609-b264-bab7e3c4417c');
+INSERT INTO taxon (scientific_name, last_update_by, taxon_rank_uuid, parent_uuid)
+VALUES ('Capra', 'Mpilwenhle', 'c8cedd9e-4d36-4e00-8554-02c692da40c9', '2774e1be-58a8-4189-b41b-75393cf78099');
+INSERT INTO taxon (scientific_name, last_update_by, taxon_rank_uuid, parent_uuid)
+VALUES ('Capra nubiana','Mpilwenhle', '0388c2a7-e8c6-4728-90ef-9f82d62780c6', 'd4b7b489-420d-415f-bee6-aa9ed68b9992');
+
+UPDATE taxon SET common_name = 'goat' WHERE scientific_name = 'Capra nubiana' AND parent_uuid = 'd4b7b489-420d-415f-bee6-aa9ed68b9992';
+
+INSERT INTO taxon (scientific_name, last_update_by, taxon_rank_uuid, parent_uuid)
+VALUES ('Animalia', 'Mpilwenhle', '5a70ca78-7679-49ae-b672-76ab6ddac7ad', null);
+INSERT INTO taxon (scientific_name, last_update_by, taxon_rank_uuid, parent_uuid)
+VALUES ('Chordata', 'Mpilwenhle', '9493133d-0fde-420b-aa67-59909011eb8d', '8cdf3f7e-ec06-47f6-9da7-02a0aebbdbe3');
+INSERT INTO taxon (scientific_name, last_update_by, taxon_rank_uuid, parent_uuid)
+VALUES ('Mammalia', 'Mpilwenhle', '3053d90a-79c9-4d1c-8aa9-868d6329f5d9', '248e468a-e212-4069-8a33-926f5e1c1b43');
+INSERT INTO taxon (scientific_name, last_update_by, taxon_rank_uuid, parent_uuid)
+VALUES ('Artiodactyla', 'Mpilwenhle', 'b4abaf6e-8107-4ffb-84f1-940c970516ff', '249baeba-86cb-4316-a36d-4b2d434306c0');
+INSERT INTO taxon (scientific_name, last_update_by, taxon_rank_uuid, parent_uuid)
+VALUES ('Bovidae', 'Mpilwenhle', 'b8fb7897-d7c9-4923-8ce3-4cbece54d9c8', '7f7d3f92-a153-4609-b264-bab7e3c4417c');
+INSERT INTO taxon (scientific_name, last_update_by, taxon_rank_uuid, parent_uuid)
+VALUES ('Syncerus', 'Mpilwenhle', 'c8cedd9e-4d36-4e00-8554-02c692da40c9', '2774e1be-58a8-4189-b41b-75393cf78099');
+INSERT INTO taxon (scientific_name, common_name, last_update_by, taxon_rank_uuid, parent_uuid)
+VALUES ('Syncerus caffer','buffalo''Mpilwenhle', '0388c2a7-e8c6-4728-90ef-9f82d62780c6', 'd4b7b489-420d-415f-bee6-aa9ed68b9992');
+
+
+SELECT * FROM taxon_rank;
+UPDATE taxon SET name = 'goat' WHERE scientific_name = 'Capra nubiana'
