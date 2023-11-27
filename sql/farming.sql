@@ -1210,10 +1210,3 @@ COMMENT ON COLUMN animal_observation.observation_time  is 'The date that the obs
 COMMENT ON COLUMN animal_observation.last_update is 'The date that the last update was made (yyyy-mm-dd hh:mm:ss).';
 COMMENT ON COLUMN animal_observation.last_update_by is 'The name of the user responsible for the latest update.';
 COMMENT ON COLUMN animal_observation.uuid is 'The unique user ID.';
-
-
-
-
-
--- ANIMAL OBSERVATION
-insert into habitat (LAST_UPDATE_BY) values (DESERT, MPILWENHLE)
